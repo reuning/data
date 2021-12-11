@@ -21,7 +21,7 @@ vap_dt <- fread("County.csv")
 elec_dt <- fread("countypres_2000-2020.csv")
 ```
 
-### Fix FIPs problems
+### Fix FIPS problems
 
 State FIPS codes are two digit numbers, county FIPS codes are three
 digit numbers. Often the leading zeros will be lost when CSV or Excel
@@ -58,7 +58,7 @@ dim(elec_dt_20)
 
     ## [1] 3155    5
 
-### Selection just the total VAP data
+### Selecting just the total VAP data
 
 ``` r
 vap_dt <- vap_dt[lntitle=="Total",]

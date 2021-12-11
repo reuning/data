@@ -21,7 +21,7 @@ elec_dt <- fread("countypres_2000-2020.csv")
 
 ```
 
-### Fix FIPs problems
+### Fix FIPS problems
 State FIPS codes are two digit numbers, county FIPS codes are three digit numbers. Often the leading zeros will be lost when CSV or Excel files are used as they are treated as numbers instead of strings. The election dataset has a combined state and county FIPS code where leading zeros are lost. `formatC()` formats a number and returns it as a character. 
 
 The census voting age population data uses a more elaborate `geoid` code where the FIPS code is embedded. `substr()` is used to get just a subset of the string. 
@@ -41,7 +41,7 @@ elec_dt_20 <- unique(elec_dt_20)
 dim(elec_dt_20)
 ```
 
-### Selection just the total VAP data
+### Selecting just the total VAP data
 ```{r}
 vap_dt <- vap_dt[lntitle=="Total",]
 dim(vap_dt)
