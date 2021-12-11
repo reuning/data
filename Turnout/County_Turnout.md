@@ -163,4 +163,4 @@ p + scale_fill_viridis_c("County Turnout", labels=scales::label_percent()) +
 
     ## Warning: Use of `map_df$group` is discouraged. Use `group` instead.
 
-![](County_Turnout_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](County_Turnout_files/figure-gfm/map-1.png)<!-- -->
