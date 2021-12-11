@@ -141,6 +141,8 @@ write.csv(turnout_dt[,.(county_fips,county_name, state, turnout_rate, totalvotes
           file="county_turnout_2020.csv")
 ```
 
+You can get it [here](county_turnout_2020.csv)
+
 ## Making a map
 
 Legally speaking you cannot combine this data without creating a map
