@@ -166,3 +166,63 @@ p + scale_fill_viridis_c("County Turnout", labels=scales::label_percent()) +
     ## Warning: Use of `map_df$group` is discouraged. Use `group` instead.
 
 ![](County_Turnout_files/figure-gfm/map-1.png)<!-- -->
+
+## 2016 Turnout
+
+Lets do it with [2016 now as well](county_turnout_2016.csv). The data
+comes from the same place but for some reasn the census decided to use
+all caps for their column labels then.
+
+``` r
+vap_dt <- fread("County_2016.csv")
+vap_dt[,county_fips:=substr(GEOID, 8, 12)]
+elec_dt_16 <- elec_dt[year ==2016, .(year, state, county_name, county_fips, totalvotes)]
+elec_dt_16 <- unique(elec_dt_16)
+
+vap_dt <- vap_dt[LNTITLE=="Total",]
+
+missing_fips <- vap_dt[which(!county_fips %in% elec_dt_20$county_fips), county_fips]
+table(substr(missing_fips, 0, 2))
+```
+
+    ## 
+    ## 02 11 15 46 72 
+    ## 26  1  1  1 78
+
+``` r
+missing_fips <- elec_dt_20[which(!county_fips %in% vap_dt$county_fips), county_fips]
+table(substr(missing_fips, 0, 2))
+```
+
+    ## 
+    ##    02 36 46 
+    ##  2 38  1  1
+
+``` r
+turnout_dt <- merge(vap_dt, elec_dt_16, by="county_fips")
+turnout_dt[,turnout_rate:=totalvotes/CVAP_EST]
+range(turnout_dt$turnout_rate, na.rm=T)
+```
+
+    ## [1] 0.03337462 3.32468193
+
+``` r
+turnout_dt[turnout_rate>1 | turnout_rate < 0.1, .(GEONAME, CVAP_EST, totalvotes, turnout_rate)]
+```
+
+    ##                               GEONAME CVAP_EST totalvotes turnout_rate
+    ## 1:     Aleutians East Borough, Alaska     1965       6533   3.32468193
+    ## 2: Aleutians West Census Area, Alaska     3635       7436   2.04566713
+    ## 3:     Anchorage Municipality, Alaska   213935       7140   0.03337462
+    ## 4:          San Juan County, Colorado      495        506   1.02222222
+    ## 5:         Harding County, New Mexico      470        527   1.12127660
+    ## 6:               Loving County, Texas       60         65   1.08333333
+    ## 7:             McMullen County, Texas      460        499   1.08478261
+
+``` r
+turnout_dt <- turnout_dt[state!="ALASKA",]
+
+write.csv(turnout_dt[,.(county_fips,county_name, state, turnout_rate, totalvotes, 
+              CVAP_EST, TOT_EST)], 
+          file="county_turnout_2016.csv")
+```

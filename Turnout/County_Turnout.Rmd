@@ -93,3 +93,34 @@ p <- plot_usmap(regions="counties", data=turnout_dt, values="turnout_rate",
 p + scale_fill_viridis_c("County Turnout", labels=scales::label_percent()) + 
   theme(legend.position = "right")
 ```
+
+## 2016 Turnout
+Lets do it with [2016 now as well](county_turnout_2016.csv). The data comes from the same place but for some reasn the census decided to use all caps for their column labels then. 
+
+```{r}
+vap_dt <- fread("County_2016.csv")
+vap_dt[,county_fips:=substr(GEOID, 8, 12)]
+elec_dt_16 <- elec_dt[year ==2016, .(year, state, county_name, county_fips, totalvotes)]
+elec_dt_16 <- unique(elec_dt_16)
+
+vap_dt <- vap_dt[LNTITLE=="Total",]
+
+missing_fips <- vap_dt[which(!county_fips %in% elec_dt_20$county_fips), county_fips]
+table(substr(missing_fips, 0, 2))
+
+missing_fips <- elec_dt_20[which(!county_fips %in% vap_dt$county_fips), county_fips]
+table(substr(missing_fips, 0, 2))
+
+
+turnout_dt <- merge(vap_dt, elec_dt_16, by="county_fips")
+turnout_dt[,turnout_rate:=totalvotes/CVAP_EST]
+range(turnout_dt$turnout_rate, na.rm=T)
+turnout_dt[turnout_rate>1 | turnout_rate < 0.1, .(GEONAME, CVAP_EST, totalvotes, turnout_rate)]
+
+turnout_dt <- turnout_dt[state!="ALASKA",]
+
+write.csv(turnout_dt[,.(county_fips,county_name, state, turnout_rate, totalvotes, 
+              CVAP_EST, TOT_EST)], 
+          file="county_turnout_2016.csv")
+
+```
